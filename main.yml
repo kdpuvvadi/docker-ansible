@@ -1,0 +1,18 @@
+---
+- name: Docker
+  hosts: all
+  become: true
+
+  pre_tasks:
+    - name: Apt cache update & upgrade
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+        upgrade: true
+
+  tasks:
+    - name: Install packages/prerequisites
+      ansible.builtin.import_tasks: tasks/packages.yml
+
+    - name: Setup Docker
+      ansible.builtin.import_tasks: tasks/docker.yml

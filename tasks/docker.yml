@@ -1,0 +1,42 @@
+---
+- name: If Docker is already installed?.
+  ansible.builtin.command: which docker
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  register: docker_present
+
+- name: Download Docker install script.
+  ansible.builtin.get_url:
+    url: https://get.docker.com/
+    dest: /tmp/get-docker.sh
+    mode: '0775'
+  when:
+    - docker_present.rc == 1
+
+- name: Run Docker install script.
+  ansible.builtin.command: /tmp/get-docker.sh
+  failed_when: false
+  changed_when: false
+  check_mode: false
+  environment:
+    CHANNEL: stable
+  when:
+    - docker_present.rc == 1
+
+- name: Start docker
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
+
+- name: Create group docker
+  ansible.builtin.group:
+    name: docker
+    state: present
+
+- name: Adding to docker group, "{{ ansible_user }}"
+  ansible.builtin.user:
+    name: "{{ ansible_user }}"
+    groups: docker
+    append: true
