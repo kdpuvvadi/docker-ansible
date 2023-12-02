@@ -9,9 +9,6 @@
       - software-properties-common
       - virtualenv
       - python3-setuptools
+      - python3-docker
     state: present
     cache_valid_time: 3600
-
-- name: Install python docker SDK
-  ansible.builtin.pip:
-    name: docker
